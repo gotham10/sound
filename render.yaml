@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: roblox-asset-api
+    env: python
+    plan: starter
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      apt-get update && apt-get install -y wget unzip
+      CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
+      wget -N http://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -P /tmp
+      unzip /tmp/chromedriver_linux64.zip -d /usr/local/bin
+      rm /tmp/chromedriver_linux64.zip
+      wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+      echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+      apt-get update
+      apt-get install -y google-chrome-stable
+    startCommand: "gunicorn sitee:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
