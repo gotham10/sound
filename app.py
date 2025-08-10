@@ -5,7 +5,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 
 app = Flask(__name__)
 
@@ -21,7 +20,8 @@ def get_asset_name(asset_id):
 
     driver = None
     try:
-        service = Service(ChromeDriverManager().install())
+        # Point directly to the chromedriver installed by the build command
+        service = Service(executable_path='/usr/local/bin/chromedriver')
         driver = webdriver.Chrome(service=service, options=options)
         driver.get(url)
         
@@ -33,7 +33,7 @@ def get_asset_name(asset_id):
         
         title_text = soup.title.string
         
-        if ' - Creator Store' in title_text:
+        if title_text and ' - Creator Store' in title_text:
             name_part = title_text.split(' - Creator Store')[0].strip()
             if '/' in name_part:
                 asset_name = name_part.split('/')[-1]
